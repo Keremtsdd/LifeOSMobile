@@ -17,7 +17,7 @@ export const ActivityService = {
       return response.data;
     } catch (error) {
       console.error("Category analytics retrieval failed:", error);
-      throw error;
+      return [];
     }
   },
 
