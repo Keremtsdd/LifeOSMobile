@@ -30,4 +30,14 @@ export const ActivityService = {
       throw error;
     }
   },
+
+  getAchievements: async () => {
+    try {
+      const response = await api.get("/Activities/achievements");
+      return response.data;
+    } catch (error) {
+      console.error("Achievements retrieval failed:", error);
+      throw error;
+    }
+  },
 };
