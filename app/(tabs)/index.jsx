@@ -82,6 +82,7 @@ export default function Dashboard() {
     stats && stats.length > 0
       ? stats.find((u) => u.id === 6) || stats[0]
       : null;
+  console.log("Gelen Kullanıcı Verisi:", JSON.stringify(myData, null, 2));
 
   // DİNAMİK LEVEL VE XP HESAPLAMA
   const currentXP = myData?.totalXP || 0;
