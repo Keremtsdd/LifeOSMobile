@@ -1,6 +1,6 @@
 // app/(tabs)/index.jsx
 import * as Icons from "lucide-react-native";
-import { Activity, Calendar, Clock, MapPin } from "lucide-react-native";
+import { Activity, Calendar, MapPin } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
   Dimensions,
@@ -82,7 +82,6 @@ export default function Dashboard() {
     stats && stats.length > 0
       ? stats.find((u) => u.id === 6) || stats[0]
       : null;
-  console.log("Gelen Kullanıcı Verisi:", JSON.stringify(myData, null, 2));
 
   // DİNAMİK LEVEL VE XP HESAPLAMA
   const currentXP = myData?.totalXP || 0;
@@ -238,52 +237,6 @@ export default function Dashboard() {
               </Text>
             </View>
           )}
-        </View>
-
-        {/* SON AKTİVİTELER LİSTESİ */}
-        <View className="mb-8">
-          <View className="flex-row justify-between items-center mb-4 px-2">
-            <Text className="text-white text-xl font-bold">
-              Son Aktiviteler
-            </Text>
-            <Text className="text-blue-500 text-xs font-bold">Hepsini Gör</Text>
-          </View>
-          <View className="bg-slate-900 p-4 rounded-[30px] border border-slate-800">
-            {myData?.recentActivities && myData.recentActivities.length > 0 ? (
-              myData.recentActivities.slice(0, 4).map((act, index) => (
-                <View
-                  key={index}
-                  className={`flex-row items-center py-3 ${index !== 3 ? "border-b border-slate-800" : ""}`}
-                >
-                  <View className="bg-blue-500/10 p-3 rounded-2xl mr-4">
-                    <Clock size={18} color="#3b82f6" />
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-white font-semibold text-base">
-                      {act.title}
-                    </Text>
-                    <Text className="text-slate-500 text-xs">
-                      {act.categoryName}
-                    </Text>
-                  </View>
-                  <View className="items-end">
-                    <Text className="text-blue-400 font-bold">
-                      {act.durationMinutes} dk
-                    </Text>
-                    <Text className="text-slate-600 text-[10px]">
-                      {act.date || "Bugün"}
-                    </Text>
-                  </View>
-                </View>
-              ))
-            ) : (
-              <View className="py-4 items-center">
-                <Text className="text-slate-500 italic text-sm">
-                  Henüz bir kayıt yok.
-                </Text>
-              </View>
-            )}
-          </View>
         </View>
 
         {/* Kategori Odaklı Gelişim */}
