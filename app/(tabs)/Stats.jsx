@@ -176,44 +176,45 @@ export default function StatsScreen() {
       </View>
 
       {/* Haftalık Yoğunluk Bar */}
+      {/* Haftalık Yoğunluk Bar */}
       <View className="bg-slate-900 p-6 rounded-[35px] border border-slate-800 mb-8 mx-2">
-        <Text className="text-white font-bold mb-6 text-lg">
+        <Text className="text-white font-bold mb-10 text-lg">
           Haftalık Aktivite Yoğunluğu
         </Text>
         <View className="flex-row justify-between items-end h-24 px-2">
           {daysOfWeek.map((dayName, index) => {
-            // Backend verisindeki tarihleri (örn: "25/02") eşleştiriyoruz
+            // Backend'den gelen tarihleri güvenli bir şekilde eşleştiriyoruz
             const dayData = weeklyData.find((d) => {
               const dateStr = d.Day || d.day;
               if (!dateStr) return false;
 
-              const [dPart, mPart] = dateStr.split("/");
-              // Saat farkı hatalarını önlemek için öğle saatini (12:00) baz alıyoruz
+              // "25/02" formatını parçala
+              const parts = dateStr.includes("/")
+                ? dateStr.split("/")
+                : dateStr.split(".");
+              const [dPart, mPart] = parts;
+
+              // Mevcut yılın bu tarihindeki gün indexini bul (0:Pazar, 1:Pazartesi...)
               const dateObj = new Date(
                 new Date().getFullYear(),
                 parseInt(mPart) - 1,
                 parseInt(dPart),
-                12,
-                0,
-                0,
               );
 
-              // JS'de 0: Pazar, 1: Pazartesi ... 6: Cumartesi'dir.
-              // daysOfWeek dizimiz "Pzt" ile başladığı için index kaydırması yapıyoruz:
-              // Pzt:1, Sal:2, Çar:3, Per:4, Cum:5, Cmt:6, Paz:0
-              const jsDayIndex = dateObj.getDay();
-              const normalizedIndex = jsDayIndex === 0 ? 6 : jsDayIndex - 1;
+              // Pzt:0, Sal:1... indexine çevirmek için kaydırma yapıyoruz
+              const jsDay = dateObj.getDay();
+              const normalizedJsDay = jsDay === 0 ? 6 : jsDay - 1; // Pzt=0, Paz=6
 
-              return normalizedIndex === index;
+              return normalizedJsDay === index;
             });
 
             const xpValue = dayData?.TotalXP || dayData?.totalXP || 0;
+            // 1000 XP'yi tam boy (100%) kabul ediyoruz
             const barHeight =
               xpValue > 0 ? Math.min((xpValue / 1000) * 100, 100) : 10;
 
             return (
               <View key={index} className="items-center">
-                {/* XP değeri varsa sütun üzerinde göster */}
                 {xpValue > 0 && (
                   <Text className="text-blue-400 text-[8px] mb-1 font-bold">
                     {xpValue}
