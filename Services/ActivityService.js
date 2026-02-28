@@ -1,6 +1,7 @@
+import { Platform } from "react-native";
 import api from "./api";
 const token =
-  "eyJhbGciOiJFUzI1NiIsImtpZCI6IjJmNDg4OTFiLTlhODMtNGFlYy1hODBiLTQzZjUyYjllYTgxMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3BienBnZXB3d2xnc3N0bm1vcGpiLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIyNjg2N2U2Yy1iYjEzLTQ4NDMtYTI2MS04ZDBlMDNlMGQwMzgiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzcyMTk4NTU1LCJpYXQiOjE3NzIxOTQ5NTUsImVtYWlsIjoidGFzdC5rZXJlbUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsX3ZlcmlmaWVkIjp0cnVlfSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc3MjE5NDk1NX1dLCJzZXNzaW9uX2lkIjoiYjUxZWRlZTctMjAwMy00NTVlLTg5Y2MtNDQwNjM2YWI5MjU3IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.oIvCbeqYh47u7028J22dxgfRvGDEExj_oT-y8O_BZ3uDZUZOE6H4csatYAxt3My0pKQR8Oh72O6JGQP1XCnCkA";
+  "eyJhbGciOiJFUzI1NiIsImtpZCI6IjJmNDg4OTFiLTlhODMtNGFlYy1hODBiLTQzZjUyYjllYTgxMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3BienBnZXB3d2xnc3N0bm1vcGpiLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIyNjg2N2U2Yy1iYjEzLTQ4NDMtYTI2MS04ZDBlMDNlMGQwMzgiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzcyMzE5OTY1LCJpYXQiOjE3NzIzMTYzNjUsImVtYWlsIjoidGFzdC5rZXJlbUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsX3ZlcmlmaWVkIjp0cnVlfSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc3MjMxNjM2NX1dLCJzZXNzaW9uX2lkIjoiNWJjOGUwYzAtNGJmZC00M2M0LWJhNmQtN2E4NWRjZDhiNDA5IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.9G4JEP7agLhq3ccU8riBDSWNaS2cadIbqXZvm5bKGrdf-s-z2MnYe_Mj13XBrU5dDgjvr8tJ3kZgFXNxx57kDw";
 
 export const ActivityService = {
   getAllUsersStats: async () => {
@@ -96,6 +97,37 @@ export const ActivityService = {
       return response.data;
     } catch (error) {
       console.error("My activities retrieval failed:", error);
+      throw error;
+    }
+  },
+
+  updateProfilePicture: async (uri) => {
+    const formData = new FormData();
+
+    formData.append("File", {
+      uri: Platform.OS === "ios" ? uri.replace("file://", "") : uri,
+      name: `user_profile.jpg`, // Sabit bir isim verelim
+      type: "image/jpeg",
+    });
+
+    try {
+      const response = await api.post(
+        "/User/update-profile-picture",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+          transformRequest: (data) => data,
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Profil resmi yüklenirken hata oluştu:",
+        error.response?.data || error.message,
+      );
       throw error;
     }
   },
