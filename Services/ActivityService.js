@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import api from "./api";
 const token =
-  "eyJhbGciOiJFUzI1NiIsImtpZCI6IjJmNDg4OTFiLTlhODMtNGFlYy1hODBiLTQzZjUyYjllYTgxMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3BienBnZXB3d2xnc3N0bm1vcGpiLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIyNjg2N2U2Yy1iYjEzLTQ4NDMtYTI2MS04ZDBlMDNlMGQwMzgiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzcyMzE5OTY1LCJpYXQiOjE3NzIzMTYzNjUsImVtYWlsIjoidGFzdC5rZXJlbUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsX3ZlcmlmaWVkIjp0cnVlfSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc3MjMxNjM2NX1dLCJzZXNzaW9uX2lkIjoiNWJjOGUwYzAtNGJmZC00M2M0LWJhNmQtN2E4NWRjZDhiNDA5IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.9G4JEP7agLhq3ccU8riBDSWNaS2cadIbqXZvm5bKGrdf-s-z2MnYe_Mj13XBrU5dDgjvr8tJ3kZgFXNxx57kDw";
+  "eyJhbGciOiJFUzI1NiIsImtpZCI6IjJmNDg4OTFiLTlhODMtNGFlYy1hODBiLTQzZjUyYjllYTgxMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3BienBnZXB3d2xnc3N0bm1vcGpiLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIyNjg2N2U2Yy1iYjEzLTQ4NDMtYTI2MS04ZDBlMDNlMGQwMzgiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzcyNDUyNjQyLCJpYXQiOjE3NzI0NDkwNDIsImVtYWlsIjoidGFzdC5rZXJlbUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsX3ZlcmlmaWVkIjp0cnVlfSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc3MjQ0OTA0Mn1dLCJzZXNzaW9uX2lkIjoiZWFlYzA2NjMtMWU5Mi00ZTAzLWE5Y2UtNzUyZjU2NmQwMzgwIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.Dlogw8d_nADnUPPF8qj8c1WsZFSdiJ6THYdAZvtTSq7OlB22bTL9O7Zi7QF2hsdRXGJQmjFd5MIY7CUcrWbkYw";
 
 export const ActivityService = {
   getAllUsersStats: async () => {
@@ -128,6 +128,18 @@ export const ActivityService = {
         "Profil resmi yüklenirken hata oluştu:",
         error.response?.data || error.message,
       );
+      throw error;
+    }
+  },
+
+  getLeaderboard: async (page = 1, pageSize = 10) => {
+    try {
+      const response = await api.get(`/Activities/leaderboard`, {
+        params: { page, pageSize },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Leaderboard retrieval failed:", error);
       throw error;
     }
   },
