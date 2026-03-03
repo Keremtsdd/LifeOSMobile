@@ -26,7 +26,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="Home"
         options={{
           title: "Dashboard",
           tabBarIcon: ({ color, size }) => (
@@ -44,7 +44,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="timer" // Bu sayfa aktivite başlatmak için
+        name="Timer" // Bu sayfa aktivite başlatmak için
         options={{
           title: "Odaklan",
           tabBarIcon: ({ color, size }) => (
@@ -53,7 +53,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="Profile"
         options={{
           title: "Profil",
           tabBarIcon: ({ color, size }) => (
