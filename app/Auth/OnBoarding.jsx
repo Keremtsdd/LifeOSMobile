@@ -1,9 +1,11 @@
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import * as Icons from "lucide-react-native";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
+  SafeAreaView,
   Text,
   TouchableOpacity,
   View,
@@ -11,100 +13,116 @@ import {
 
 const { width } = Dimensions.get("window");
 
+// Tanıtım Sayfaları Verisi
 const SLIDES = [
   {
     id: "1",
     title: "Hayatını Oyunlaştır",
-    desc: "Her aktivite sana XP kazandırır. Seviye atla ve geliş.",
-    icon: "Gamepad2",
+    desc: "Tamamladığın her görev sana XP kazandırır. Seviye atla ve gerçek potansiyelini keşfet.",
+    icon: "game-controller",
     color: "#6366f1",
   },
   {
     id: "2",
-    title: "Zirveye Oyna",
-    desc: "Liderlik tablosunda arkadaşlarınla yarış ve en iyisi ol.",
-    icon: "Trophy",
+    title: "İstatistiklerini Takip Et",
+    desc: "Gelişimini detaylı grafiklerle izle. Hangi günlerde daha verimlisin gör.",
+    icon: "stats-chart",
     color: "#f59e0b",
   },
   {
     id: "3",
-    title: "Sıfırdan Başla",
-    desc: "Şimdi kayıt ol ve kendi serüvenini yazmaya başla.",
-    icon: "Rocket",
+    title: "Serüvene Başla",
+    desc: "Hazırsan kayıt ol ve ilk görevini tamamlamak için yola koyul!",
+    icon: "rocket",
     color: "#10b981",
   },
 ];
 
-export default function Onboarding() {
+export default function OnBoarding() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef < FlatList > null;
+
+  // Tanıtımı bitiren ve hafızaya kaydeden fonksiyon
+  const handleFinish = async () => {
+    try {
+      await AsyncStorage.setItem("hasSeenOnboarding", "true");
+      router.replace("/Auth/Login");
+    } catch (e) {
+      console.error("Hata:", e);
+    }
+  };
+
+  // Sonraki sayfaya geçiş veya Bitir
+  const handleNext = () => {
+    if (currentIndex < SLIDES.length - 1) {
+      flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
+    } else {
+      handleFinish();
+    }
+  };
 
   return (
-    <View className="flex-1 bg-slate-950">
-      {/* Atla Butonu */}
-      <TouchableOpacity
-        onPress={() => router.replace("/auth/register")}
-        className="absolute top-16 right-6 z-10"
-      >
-        <Text className="text-slate-500 font-bold">Atla</Text>
-      </TouchableOpacity>
+    <SafeAreaView className="flex-1 bg-slate-950">
+      {/* Üst Kısım: Atla Butonu */}
+      <View className="h-10 px-6 justify-center items-end">
+        <TouchableOpacity onPress={handleFinish}>
+          <Text className="text-slate-500 font-bold text-base">Atla</Text>
+        </TouchableOpacity>
+      </View>
 
+      {/* Orta Kısım: Kaydırılabilir İçerik */}
       <FlatList
+        ref={flatListRef}
         data={SLIDES}
         horizontal
         pagingEnabled
-        onMomentumScrollEnd={(e) =>
-          setCurrentIndex(Math.round(e.nativeEvent.contentOffset.x / width))
-        }
         showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={(e) => {
+          const contentOffsetX = e.nativeEvent.contentOffset.x;
+          const index = Math.round(contentOffsetX / width);
+          setCurrentIndex(index);
+        }}
         renderItem={({ item }) => (
           <View style={{ width }} className="items-center justify-center px-10">
             <View
-              className="p-10 rounded-full mb-10"
               style={{ backgroundColor: `${item.color}20` }}
+              className="p-10 rounded-full mb-10 border border-slate-800"
             >
-              {item.icon === "Gamepad2" && (
-                <Icons.Gamepad2 color={item.color} size={100} />
-              )}
-              {item.icon === "Trophy" && (
-                <Icons.Trophy color={item.color} size={100} />
-              )}
-              {item.icon === "Rocket" && (
-                <Icons.Rocket color={item.color} size={100} />
-              )}
+              <Ionicons name={item.icon} size={100} color={item.color} />
             </View>
-            <Text className="text-white text-3xl font-black text-center mb-4">
+            <Text className="text-white text-3xl font-black text-center mb-4 uppercase italic tracking-tighter">
               {item.title}
             </Text>
-            <Text className="text-slate-400 text-center text-lg">
+            <Text className="text-slate-400 text-center text-lg leading-6">
               {item.desc}
             </Text>
           </View>
         )}
       />
 
-      {/* Alt Bar */}
-      <View className="pb-20 px-10 flex-row justify-between items-center">
+      {/* Alt Kısım: Sayfa Belirteçleri ve Buton */}
+      <View className="px-10 pb-12 flex-row justify-between items-center">
+        {/* Noktalar (Paging Dots) */}
         <View className="flex-row">
           {SLIDES.map((_, i) => (
             <View
               key={i}
-              className={`h-1.5 rounded-full mx-1 ${i === currentIndex ? "w-8 bg-blue-500" : "w-2 bg-slate-800"}`}
+              className={`h-2 rounded-full mx-1 ${i === currentIndex ? "w-8 bg-blue-500" : "w-2 bg-slate-800"}`}
             />
           ))}
         </View>
 
+        {/* İleri/Başla Butonu */}
         <TouchableOpacity
-          onPress={() =>
-            currentIndex === 2 ? router.replace("/auth/register") : null
-          }
-          className="bg-blue-600 px-8 py-4 rounded-2xl"
+          onPress={handleNext}
+          className="bg-blue-600 px-8 py-4 rounded-2xl shadow-lg shadow-blue-500/20"
         >
-          <Text className="text-white font-bold">
-            {currentIndex === 2 ? "Başla" : "Sonraki"}
+          <Text className="text-white font-black text-lg">
+            {currentIndex === SLIDES.length - 1 ? "BAŞLA" : "İLERİ"}
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
